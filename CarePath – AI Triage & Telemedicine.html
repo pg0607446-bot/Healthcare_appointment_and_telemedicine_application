@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CarePath – AI Triage & Telemedicine</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef6fb;--card:#fff;--ink:#0b2239;--mute:#51697d;--line:#d3e2ee;--teal:#0a84a8;--teal-d:#066582;--amber:#f59e0b;--red:#d92d20;--on:#fff;--ok-bg:#dcf5e6;--ok-tx:#14633a;--mid-bg:#fdf0d5;--mid-tx:#7a4b00;--hi-bg:#fde3e0;--hi-tx:#b42318;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1624;--card:#12263a;--ink:#e8f1f8;--mute:#92abc0;--line:#25435e;--teal:#38bdf8;--teal-d:#7dd3fc;--on:#04202e;--ok-bg:#12382a;--ok-tx:#7be0a6;--mid-bg:#3d2f0c;--mid-tx:#fbbf24;--hi-bg:#3f1714;--hi-tx:#ff8a80}}
+:root[data-theme="dark"]{--bg:#0a1624;--card:#12263a;--ink:#e8f1f8;--mute:#92abc0;--line:#25435e;--teal:#38bdf8;--teal-d:#7dd3fc;--on:#04202e;--ok-bg:#12382a;--ok-tx:#7be0a6;--mid-bg:#3d2f0c;--mid-tx:#fbbf24;--hi-bg:#3f1714;--hi-tx:#ff8a80}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:'Bricolage Grotesque',Figtree,sans-serif;margin:0;line-height:1.1}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.5px}.logo i{font-style:normal;color:var(--teal)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:none;border:0;color:var(--mute);font:600 15px Figtree,sans-serif;padding:8px 14px;border-radius:8px;cursor:pointer}
+nav button.on{background:var(--teal);color:var(--on)}
+nav button.theme{font-size:18px;padding:5px 10px;border:1px solid var(--line);background:var(--card)}
+.hero h1 em{font-style:normal;color:var(--teal)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+main{max-width:1000px;margin:0 auto;padding:24px 20px 60px}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start}
+@media(max-width:760px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(32px,6vw,52px);font-weight:800;letter-spacing:-1.5px}
+.hero p{color:var(--mute);max-width:46ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);color:var(--ink);font:inherit;resize:vertical}
+.btn{background:var(--teal);color:var(--on);border:0;border-radius:10px;padding:11px 18px;font:600 15px Figtree,sans-serif;cursor:pointer}
+.btn:hover{background:var(--teal-d)}.btn.ghost{background:none;color:var(--teal);border:1px solid var(--teal)}.btn.sm{padding:7px 12px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:5px 11px;border-radius:99px;font:500 13px Figtree;cursor:pointer}
+.chip:hover{border-color:var(--teal)}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:4px 0 12px}
+.bar span{display:block;height:100%;background:var(--teal);transition:width .6s}
+.row{display:flex;justify-content:space-between;gap:10px;font-weight:600;font-size:15px}
+.urg{padding:10px 14px;border-radius:10px;font-weight:600;margin:12px 0}
+.urg.low{background:var(--ok-bg);color:var(--ok-tx)}.urg.mid{background:var(--mid-bg);color:var(--mid-tx)}.urg.high{background:var(--hi-bg);color:var(--hi-tx);border:2px solid var(--hi-tx)}
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:16px}
+.doc{display:flex;flex-direction:column;gap:6px}
+.av{width:46px;height:46px;border-radius:50%;background:var(--teal);color:var(--on);display:grid;place-items:center;font:800 17px 'Bricolage Grotesque'}
+.mute{color:var(--mute);font-size:14px}
+.slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.slot{padding:6px 10px;border:1px solid var(--teal);color:var(--teal);background:none;border-radius:8px;font:600 13px Figtree;cursor:pointer}
+.slot:hover{background:var(--teal);color:var(--on)}.slot[disabled]{opacity:.35;cursor:not-allowed;border-color:var(--line);color:var(--mute)}
+.appt{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.tag{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--line)}
+.room{display:grid;grid-template-columns:2fr 1fr;gap:14px}@media(max-width:760px){.room{grid-template-columns:1fr}}
+video{width:100%;background:#000;border-radius:12px;aspect-ratio:4/3;object-fit:cover}
+.chat{display:flex;flex-direction:column;height:100%;min-height:240px}.msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.m{padding:7px 11px;border-radius:10px;background:var(--bg);max-width:90%;font-size:14px}.m.me{background:var(--teal);color:var(--on);align-self:flex-end}
+input[type=text]{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:10px;font-weight:600;z-index:9}
+.hide{display:none}
+.disc{font-size:13px;color:var(--mute);margin-top:30px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Care<i>Path</i></div>
+  <nav id="nav">
+    <button data-v="home" class="on">AI triage</button>
+    <button data-v="docs">Doctors</button>
+    <button data-v="appts">My appointments</button>
+    <button data-v="room">Consultation</button>
+    <button id="themeBtn" class="theme" aria-label="Toggle dark mode">🌙</button>
+  </nav>
+</header>
+<main>
+
+<section id="v-home">
+  <div class="hero">
+    <div>
+      <h1>Describe your symptoms. We find the <em>right doctor.</em></h1>
+      <p>The triage model reads your symptoms, estimates which specialty fits best and how urgent it is, then shows doctors with open slots today.</p>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="panel">
+      <label for="sym" class="mute">What are you feeling?</label>
+      <textarea id="sym" placeholder="Example: fever, sore throat and body pain since 2 days"></textarea>
+      <div style="margin-top:10px"><button class="btn" id="go">Analyze symptoms</button></div>
+    </div>
+  </div>
+  <div id="result" class="panel hide" style="margin-top:20px"></div>
+</section>
+
+<section id="v-docs" class="hide">
+  <h2>Doctors available</h2>
+  <div class="chips" id="filters"></div>
+  <div class="docs" id="docList"></div>
+</section>
+
+<section id="v-appts" class="hide">
+  <h2>My appointments</h2>
+  <div id="apptList" style="margin-top:14px"></div>
+</section>
+
+<section id="v-room" class="hide">
+  <h2 id="roomTitle">Consultation room</h2>
+  <p class="mute" id="roomSub">Book an appointment first, then join from here.</p>
+  <div class="room hide" id="roomBox">
+    <div>
+      <video id="vid" autoplay muted playsinline></video>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn" id="camBtn">Start camera</button>
+        <button class="btn ghost" id="muteBtn">Mute mic</button>
+        <button class="btn ghost" id="jitsiBtn">Open live room (Jitsi)</button>
+        <button class="btn ghost" id="endBtn">End call</button>
+      </div>
+    </div>
+    <div class="panel chat">
+      <div class="msgs" id="msgs"></div>
+      <input type="text" id="chatIn" placeholder="Type a message and press Enter" aria-label="Chat message">
+    </div>
+  </div>
+</section>
+
+<p class="disc">Prototype for demonstration. The triage output is not a medical diagnosis. In an emergency call your local emergency number.</p>
+</main>
+<div id="toast" class="toast hide" role="status"></div>
+
+<script>
+/* ---------- 1. "ML" triage model: weighted naive-Bayes style scoring ---------- */
+const SPECIALTIES={
+ "General Physician":{fever:3,cold:3,cough:2,"body pain":2,weakness:2,headache:1,"sore throat":2,vomiting:1,"loose motion":2,fatigue:2,flu:3},
+ "Cardiologist":{"chest pain":5,palpitations:4,"breathless":3,"high bp":4,"heart":3,sweating:2,dizziness:1},
+ "Dermatologist":{rash:4,itching:4,acne:4,pimples:3,"skin":3,"hair fall":4,allergy:2,redness:2},
+ "Gastroenterologist":{"stomach pain":4,acidity:4,gas:3,constipation:4,vomiting:2,"loose motion":3,bloating:3,nausea:2,"burning":1},
+ "Orthopedic":{"back pain":4,"joint pain":4,"knee":4,fracture:5,"neck pain":3,sprain:4,swelling:2,"muscle pain":2},
+ "Neurologist":{migraine:5,headache:3,seizure:5,numbness:4,dizziness:3,tingling:3,memory:3,"blurred vision":2},
+ "Pulmonologist":{cough:3,wheezing:5,asthma:5,"breathless":4,"chest tightness":3,"shortness of breath":5},
+ "Psychiatrist":{anxiety:5,stress:4,depression:5,"low mood":4,insomnia:4,"panic":4,"sleep":2,sad:3}
+};
+const EXTRA={"Neurologist":{stroke:5,"slurred speech":5,paralysis:5,"head injury":3},"Cardiologist":{"heart attack":5},"Pulmonologist":{"difficulty breathing":5},"General Physician":{poisoning:4,overdose:4,"severe bleeding":3,"snake bite":3,"severe burn":3,"blood in vomit":3,"coughing blood":3},"Psychiatrist":{suicidal:5}};
+for(const k in EXTRA)Object.assign(SPECIALTIES[k],EXTRA[k]);
+const RED_FLAGS=["chest pain","shortness of breath","seizure","unconscious","severe bleeding","fracture","heart attack","breathless","difficulty breathing","stroke","slurred speech","paralysis","poisoning","overdose","suicidal","head injury","fainted","blood in vomit","coughing blood","severe burn","snake bite"];
+const MID_FLAGS=["high fever","vomiting","palpitations","blurred vision","numbness","wheezing"];
+const norm=s=>s.toLowerCase().replace(/[^a-z\s]/g," ");
+function triage(text){
+  const t=" "+norm(text)+" ";const raw={};let hits=[];
+  for(const [sp,w] of Object.entries(SPECIALTIES)){
+    let s=0.15; // prior
+    for(const [k,v] of Object.entries(w)) if(t.includes(" "+k+" ")||t.includes(k)){s+=v;hits.push(k)}
+    raw[sp]=s;
+  }
+  const exp=Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,Math.exp(v/1.6)]));
+  const tot=Object.values(exp).reduce((a,b)=>a+b,0);
+  const probs=Object.entries(exp).map(([k,v])=>({sp:k,p:v/tot})).sort((a,b)=>b.p-a.p);
+  let urgency="low";
+  if(RED_FLAGS.some(f=>t.includes(f)))urgency="high";
+  else if(MID_FLAGS.some(f=>t.includes(f))||/(3|4|5|6|7) days|week/.test(t))urgency="mid";
+  return{probs:probs.slice(0,3),urgency,matched:[...new Set(hits)],found:hits.length>0||urgency==="high"};
+}
+
+/* ---------- 2. Data ---------- */
+const DOCTORS=[
+ {id:1,name:"Dr. Ananya Sharma",sp:"General Physician",exp:12,fee:400,rating:4.8},
+ {id:2,name:"Dr. Rohit Verma",sp:"Cardiologist",exp:15,fee:900,rating:4.9},
+ {id:3,name:"Dr. Neha Gupta",sp:"Dermatologist",exp:8,fee:600,rating:4.7},
+ {id:4,name:"Dr. Imran Khan",sp:"Gastroenterologist",exp:10,fee:700,rating:4.6},
+ {id:5,name:"Dr. Priya Nair",sp:"Neurologist",exp:11,fee:850,rating:4.8},
+ {id:6,name:"Dr. Arjun Mehta",sp:"Orthopedic",exp:14,fee:750,rating:4.7},
+ {id:7,name:"Dr. Sana Ali",sp:"Pulmonologist",exp:9,fee:700,rating:4.6},
+ {id:8,name:"Dr. Vikram Rao",sp:"Psychiatrist",exp:13,fee:800,rating:4.9},
+ {id:9,name:"Dr. Kavita Joshi",sp:"General Physician",exp:6,fee:300,rating:4.5}
+];
+const TIMES=["10:00","10:30","11:00","11:30","12:00","14:00","14:30","15:00","15:30","16:00"];
+let appts=[];try{appts=JSON.parse(localStorage.getItem("cp_appts")||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem("cp_appts",JSON.stringify(appts))}catch(e){}};
+const today=new Date().toISOString().slice(0,10);
+let filter="All",active=null,stream=null;
+
+/* ---------- 3. UI helpers ---------- */
+const $=id=>document.getElementById(id);
+function toast(m){const t=$("toast");t.textContent=m;t.classList.remove("hide");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.add("hide"),2600)}
+function view(v){["home","docs","appts","room"].forEach(x=>$("v-"+x).classList.toggle("hide",x!==v));
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v!=="room")stopCam();if(v==="docs")renderDocs();if(v==="appts")renderAppts();if(v==="room")renderRoom();window.scrollTo(0,0)}
+$("nav").onclick=e=>{if(e.target.dataset.v)view(e.target.dataset.v)};
+const initials=n=>n.replace("Dr. ","").split(" ").map(w=>w[0]).join("");
+/* dark mode toggle (remembers choice) */
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);$("themeBtn").textContent=t==="dark"?"☀️":"🌙"}
+let th;try{th=localStorage.getItem("cp_theme")}catch(e){}
+if(!th)th=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";
+applyTheme(th);
+$("themeBtn").onclick=()=>{th=th==="dark"?"light":"dark";applyTheme(th);try{localStorage.setItem("cp_theme",th)}catch(e){}};
+
+/* ---------- 4. Triage screen ---------- */
+["fever and sore throat","chest pain with sweating","itching and skin rash","back pain and knee swelling","anxiety and no sleep","stomach pain and acidity","slurred speech and weakness","difficulty breathing"].forEach(s=>{
+  const c=document.createElement("button");c.className="chip";c.textContent=s;c.onclick=()=>{$("sym").value=s;run()};$("chips").appendChild(c)});
+$("go").onclick=run;
+function run(){
+  const txt=$("sym").value.trim();if(!txt){toast("Write at least one symptom");return}
+  const r=triage(txt);const box=$("result");box.classList.remove("hide");
+  if(!r.found){box.innerHTML='<h3>Not enough detail</h3><p class="mute">No known symptom detected. Try words like fever, cough, rash or back pain. We suggest a General Physician for now.</p><button class="btn" onclick="pick(\'General Physician\')">See General Physicians</button>';return}
+  const msg={low:"Low urgency. A routine consultation is fine.",mid:"Medium urgency. Please consult within 24 hours.",high:"EMERGENCY: call 112 (ambulance 108) or go to the nearest hospital now. Do not wait for an online appointment."}[r.urgency];
+  box.innerHTML='<h3>Triage result</h3><div class="urg '+r.urgency+'">'+msg+'</div>'+
+   '<p class="mute">Symptoms understood: '+r.matched.join(", ")+'</p>'+
+   r.probs.map(x=>'<div class="row"><span>'+x.sp+'</span><span>'+Math.round(x.p*100)+'%</span></div><div class="bar"><span style="width:'+Math.round(x.p*100)+'%"></span></div>').join("")+
+   '<button class="btn" onclick="pick(\''+r.probs[0].sp+'\')">Find '+r.probs[0].sp+'</button>';
+}
+function pick(sp){filter=sp;view("docs")}
+
+/* ---------- 5. Doctors + booking (double-booking blocked) ---------- */
+function taken(id,time){return appts.some(a=>a.docId===id&&a.date===today&&a.time===time&&a.status!=="cancelled")}
+function renderDocs(){
+  const f=$("filters");f.innerHTML="";
+  ["All",...Object.keys(SPECIALTIES)].forEach(s=>{const b=document.createElement("button");b.className="chip";b.textContent=s;
+    if(s===filter){b.style.background="var(--teal)";b.style.color="var(--on)"}b.onclick=()=>{filter=s;renderDocs()};f.appendChild(b)});
+  const list=DOCTORS.filter(d=>filter==="All"||d.sp===filter);
+  $("docList").innerHTML=list.length?list.map(d=>'<div class="panel doc"><div style="display:flex;gap:12px;align-items:center"><div class="av">'+initials(d.name)+'</div><div><h3 style="font-size:18px">'+d.name+'</h3><div class="mute">'+d.sp+' · '+d.exp+' yrs · ★ '+d.rating+'</div></div></div>'+
+    '<div class="row"><span>Fee ₹'+d.fee+'</span><span class="mute">Today</span></div><div class="slots">'+
+    TIMES.map(t=>'<button class="slot" '+(taken(d.id,t)?"disabled":"")+' onclick="book('+d.id+',\''+t+'\')">'+t+'</button>').join("")+'</div></div>').join(""):'<p class="mute">No doctors for this specialty yet.</p>';
+}
+function book(id,time){
+  if(taken(id,time)){toast("Slot already booked");return}
+  const d=DOCTORS.find(x=>x.id===id);
+  appts.push({id:Date.now(),docId:id,doc:d.name,sp:d.sp,fee:d.fee,date:today,time,status:"confirmed",room:"carepath-"+Math.random().toString(36).slice(2,10),notes:[]});
+  save();toast("Booked with "+d.name+" at "+time);renderDocs();
+}
+
+/* ---------- 6. Appointments ---------- */
+function renderAppts(){
+  const el=$("apptList");
+  if(!appts.length){el.innerHTML='<p class="mute">No appointments yet. Run the triage or open Doctors to book one.</p>';return}
+  el.innerHTML=appts.slice().reverse().map(a=>'<div class="panel appt"><div><h3 style="font-size:18px">'+a.doc+'</h3><div class="mute">'+a.sp+' · '+a.date+' at '+a.time+' · ₹'+a.fee+'</div></div><div style="display:flex;gap:8px;align-items:center"><span class="tag">'+a.status+'</span>'+
+   (a.status==="confirmed"?'<button class="btn sm" onclick="join('+a.id+')">Join call</button><button class="btn sm ghost" onclick="cancel('+a.id+')">Cancel</button>':"")+'</div></div>').join("");
+}
+function cancel(id){const a=appts.find(x=>x.id===id);if(a){a.status="cancelled";save();renderAppts();toast("Appointment cancelled")}}
+function join(id){active=appts.find(x=>x.id===id);view("room")}
+
+/* ---------- 7. Video consultation ---------- */
+function renderRoom(){
+  const has=!!active;$("roomBox").classList.toggle("hide",!has);
+  if(!has){$("roomTitle").textContent="Consultation room";$("roomSub").textContent="Book an appointment first, then join from here.";return}
+  $("roomTitle").textContent="Consultation with "+active.doc;$("roomSub").textContent=active.sp+" · "+active.date+" "+active.time;
+  $("msgs").innerHTML="";addMsg("Doctor","Hello! Please tell me what you are experiencing.",false);
+  (active.notes||[]).forEach(n=>addMsg("You",n,true));
+  startCam(); // camera sirf consultation khulne par chalu hota hai
+}
+function addMsg(w,t,me){const m=document.createElement("div");m.className="m"+(me?" me":"");m.textContent=t;$("msgs").appendChild(m);$("msgs").scrollTop=1e5}
+async function startCam(){
+  if(stream)return;
+  try{stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});$("vid").srcObject=stream;$("camBtn").textContent="Camera on"}
+  catch(e){toast("Camera blocked. Allow camera permission in your browser.")}
+}
+function stopCam(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  $("vid").srcObject=null;$("camBtn").textContent="Start camera";$("muteBtn").textContent="Mute mic";
+}
+$("camBtn").onclick=startCam;
+$("muteBtn").onclick=()=>{if(!stream){toast("Start camera first");return}const t=stream.getAudioTracks()[0];if(t){t.enabled=!t.enabled;$("muteBtn").textContent=t.enabled?"Mute mic":"Unmute mic"}};
+$("jitsiBtn").onclick=()=>{stopCam();window.open("https://meet.jit.si/"+active.room,"_blank","noopener")};
+$("endBtn").onclick=()=>{if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;$("vid").srcObject=null;$("camBtn").textContent="Start camera"}
+  if(active){const a=appts.find(x=>x.id===active.id);if(a){a.status="completed";save()}}active=null;toast("Call ended");view("appts")};
+$("chatIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.value.trim()){
+  const v=e.target.value.trim();addMsg("You",v,true);active.notes.push(v);save();e.target.value="";
+  setTimeout(()=>addMsg("Doctor","Noted. I will review this during the call.",false),700)}});
+</script>
+</body>
+</html>
